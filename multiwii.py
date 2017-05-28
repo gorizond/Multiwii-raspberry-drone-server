@@ -48,7 +48,7 @@ class drone:
 		try:
 			self.ser.open()
 
-		except Exception, e:
+		except Exception as e:
 			logging.error("Error while open serial port: " + str(e))
 			exit()
 
@@ -149,8 +149,8 @@ class drone:
 	
 		self.loopThread = threading.Thread(target=self.loop)
 		if self.ser.isOpen():
-			print("Wait 5 sec for calibrate Multiwii")
-			time.sleep(5)
+			print("Wait 1 sec for calibrate Multiwii")
+			time.sleep(1)
 			self.loopThread.start()
 
 	def stop(self):
@@ -213,15 +213,17 @@ class drone:
 		checksum = 0
 		total_data = ['$', 'M', '<', data_length, code] + data
 		for i in struct.pack('<2B%dh' % len(data), *total_data[3:len(total_data)]):
-			checksum = checksum ^ ord(i)
+			checksum = checksum ^ i
 
 		total_data.append(checksum)
+		print(data)
+		print(total_data)
 
 		try:
 			b = None
 			b = self.ser.write(struct.pack('<3c2B%dhB' % len(data), *total_data))
-		except Exception, ex:
-			print 'send data error'
+		except Exception as ex:
+			print('send data error')
 			print(ex)
 		return b
 
@@ -350,5 +352,5 @@ class drone:
 			self.ser.close()
 			file.close()
 		
-		except Exception,e1:	# Catches any errors in the serial communication
+		except Exception as e1:	# Catches any errors in the serial communication
 			print("Error on main: "+str(e1))
