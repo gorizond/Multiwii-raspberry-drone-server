@@ -3,7 +3,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 
 
-from pyMultiwii import MultiWii
+from pymultiwii import MultiWii
 
 app = Flask(__name__)
 socketio = SocketIO(app)
