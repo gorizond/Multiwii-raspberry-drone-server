@@ -5,7 +5,7 @@ WORKDIR /drone-server
 RUN apk add --update python3 && \
 	apk add --update --virtual .build-deps build-base py3-pip python3-dev git && \
 	pip3 install --no-cache-dir git+https://github.com/wil3/pyMultiWii@feature-tcp && \
-	pip3 install --no-cache-dir pyserial aiohttp && \
+	pip3 install --no-cache-dir pyserial aiohttp python-socketio && \
 	apk del .build-deps && \
 	rm -rf /var/cache/apk/*
 
