@@ -2,16 +2,13 @@ FROM arm32v6/alpine
 
 WORKDIR /drone-server
 
-RUN apk add --update python && \
-	apk add --update --virtual .build-deps build-base py-pip python-dev git && \
-	pip install --no-cache-dir git+https://github.com/alduxvm/pyMultiWii.git && \
-	pip install --no-cache-dir pyserial gevent-websocket flask-socketio && \
+RUN apk add --update python3 && \
+	apk add --update --virtual .build-deps build-base py3-pip python3-dev git && \
+	pip3 install --no-cache-dir git+https://github.com/wil3/pyMultiWii@feature-tcp && \
+	pip3 install --no-cache-dir pyserial aiohttp && \
 	apk del .build-deps && \
 	rm -rf /var/cache/apk/*
 
 CMD python run.py
 
 ADD ./ ./
-
-#RUN cp pyMultiWii/pyMultiwii.py ./pyMultiwii.py
-
