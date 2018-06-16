@@ -9,7 +9,9 @@ from pymultiwii import MultiWii
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 sio.attach(app)
+
 app.board = MultiWii('/dev/ttyUSB0')
+app.board.connect()
 
 
 @sio.on('message', namespace='/test')
