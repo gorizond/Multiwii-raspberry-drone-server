@@ -1,31 +1,36 @@
-import time
-from flask import Flask
-from flask_socketio import SocketIO
+import asyncio
 
+from aiohttp import web
+
+import socketio
 
 from pymultiwii import MultiWii
 
-app = Flask(__name__)
-socketio = SocketIO(app)
+sio = socketio.AsyncServer(async_mode='aiohttp')
+app = web.Application()
+sio.attach(app)
 app.board = MultiWii('/dev/ttyUSB0')
 
-@socketio.on('message')
-def handle__message(message):
-	print(app.board.attitude)
-	app.board.sendCMD(8,MultiWii.SET_RAW_RC,message)
-	print(message)
 
-@socketio.on('disarm')
-def handle_disarm(message):
-        app.board.disarm()
-        print("Disarmed.")
-        print(message)
+@sio.on('message', namespace='/test')
+async def test_message(sid, message):
+    print(app.board.attitude)
+    app.board.sendCMD(8,MultiWii.SET_RAW_RC,message)
+    print(message)
 
-@socketio.on('arm')
-def handle_arm(message):
-        app.board.arm()
-        print("Board is armed now!")
-        print(message)
+@sio.on('disconnect request', namespace='/test')
+async def disconnect_request(sid):
+    await sio.disconnect(sid, namespace='/test')
+
+
+@sio.on('connect', namespace='/test')
+async def test_connect(sid, environ):
+    print('Client connect')
+
+
+@sio.on('disconnect', namespace='/test')
+def test_disconnect(sid):
+    print('Client disconnected')
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=80)
+    web.run_app(app)
